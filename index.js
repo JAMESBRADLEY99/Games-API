@@ -1,5 +1,5 @@
 const express = require('express');
-const { getCategories, getReviews } = require('./Controllers/controllers.js')
+const { getCategories, getReviews, getReviewsById } = require('./Controllers/controllers.js')
 
 const app = express();
 
@@ -9,8 +9,17 @@ app.get('/api/categories', getCategories)
 
 app.get('/api/reviews', getReviews)
 
+app.get('/api/reviews/:review_id', getReviewsById)
+
 app.all("/*", (req, res) => {
     res.status(404).send({ msg: "Ooops: Noting to see here." });
   });
+
+app.use = (err, req, res, next) => {
+  if (err){
+    res.status(err.status).send(err.msg)
+  }
+  next()
+}
 
 module.exports = app;
