@@ -31,3 +31,21 @@ exports.selectReviewById = (review_id) => {
         return review.rows[0]
     })
 }
+
+exports.selectCommentsByReviewId = (review_id) => {
+    return db.query(
+        `SELECT * FROM reviews WHERE review_id = $1`, [review_id]
+    ).then((review) => {
+        if (review.rows[0] === undefined){
+            return Promise.reject({status: 404, msg: 'Ooops, nothing to see here!'})
+        }
+        return db.query(
+            `SELECT * FROM comments WHERE review_id = $1`, [review_id]
+        ).then((comments) => {
+            if (comments.rows.length === 0){
+                return {msg: 'no comments for review'}
+            }
+            return comments.rows
+        })
+    })
+}
