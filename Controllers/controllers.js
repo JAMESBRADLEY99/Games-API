@@ -1,4 +1,4 @@
-const { selectCategories, selectReviews } = require('../Models/models.js');
+const { selectCategories, selectReviews, selectReviewById } = require('../Models/models.js');
 
 exports.getCategories = (req, res) => {
     
@@ -11,7 +11,14 @@ exports.getCategories = (req, res) => {
 exports.getReviews = (req, res) => {
     selectReviews()
     .then((reviews) => {
-        console.log(reviews)
         return res.send(reviews)
     })
+}
+
+exports.getReviewsById = (req, res, next) => {
+    selectReviewById(req.params.review_id)
+    .then((review) => {
+        return res.send(review)
+    })
+    .catch((err) => next(err))
 }

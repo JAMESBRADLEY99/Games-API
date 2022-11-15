@@ -20,3 +20,14 @@ exports.selectReviews = () => {
         return reviews.rows
     })
 }
+
+exports.selectReviewById = (review_id) => {
+    return db.query(
+        `SELECT * FROM reviews WHERE review_id = $1`, [review_id]
+    ).then((review) => {
+        if (review.rows[0] === undefined){
+            return Promise.reject({status: 404, msg: 'Ooops, nothing to see here!'})
+        }
+        return review.rows[0]
+    })
+}
