@@ -40,11 +40,8 @@ exports.selectCommentsByReviewId = (review_id) => {
             return Promise.reject({status: 404, msg: 'Ooops, nothing to see here!'})
         }
         return db.query(
-            `SELECT * FROM comments WHERE review_id = $1`, [review_id]
+            `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC`, [review_id]
         ).then((comments) => {
-            if (comments.rows.length === 0){
-                return {msg: 'no comments for review'}
-            }
             return comments.rows
         })
     })

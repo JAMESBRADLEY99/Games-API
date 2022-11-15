@@ -31,6 +31,9 @@ describe('GET /api/categories', () => {
         return request(app)
             .get('/api/categoryes')
             .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe('Ooops, nothing to see here!')
+            })
     });
 });
 
@@ -64,6 +67,9 @@ describe('GET /api/reviews', () => {
         return request(app)
             .get('/api/rewies')
             .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe('Ooops, nothing to see here!')
+            })
     });
 });
 
@@ -91,6 +97,9 @@ describe(' GET /api/reviews/:review_id', () => {
         return request(app)
             .get('/api/reviews/1000')
             .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe('Ooops, nothing to see here!')
+            })
     });
 });
 
@@ -101,6 +110,14 @@ describe(' 6. GET /api/reviews/:review_id/comments', () => {
             .expect(200)
             .then((res) => {
                 expect(res.body).toEqual([
+                    {
+                      comment_id: 5,
+                      body: 'Now this is a story all about how, board games turned my life upside down',
+                      review_id: 2,
+                      author: 'mallionaire',
+                      votes: 13,
+                      created_at: '2021-01-18T10:24:05.410Z'
+                    },
                     {
                       comment_id: 1,
                       body: 'I loved this game too!',
@@ -116,14 +133,6 @@ describe(' 6. GET /api/reviews/:review_id/comments', () => {
                       author: 'bainesface',
                       votes: 16,
                       created_at: '2017-11-22T12:36:03.389Z'
-                    },
-                    {
-                      comment_id: 5,
-                      body: 'Now this is a story all about how, board games turned my life upside down',
-                      review_id: 2,
-                      author: 'mallionaire',
-                      votes: 13,
-                      created_at: '2021-01-18T10:24:05.410Z'
                     }
                   ])
             })
@@ -134,7 +143,7 @@ describe(' 6. GET /api/reviews/:review_id/comments', () => {
             .get('/api/reviews/1/comments')
             .expect(200)
             .then((res) => {
-                expect(res.body.msg).toBe('no comments for review')
+                expect(res.body).toEqual([])
             })
     });
 
@@ -142,5 +151,8 @@ describe(' 6. GET /api/reviews/:review_id/comments', () => {
         return request(app)
             .get('/api/reviews/10000/comments')
             .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe('Ooops, nothing to see here!')
+            })
     });
 });

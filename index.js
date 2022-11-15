@@ -13,16 +13,18 @@ app.get('/api/reviews/:review_id', getReviewsById)
 
 app.get('/api/reviews/:review_id/comments', getCommentsByReviewId)
 
+app.use((err, req, res, next) => {
+  if (err){
+    res.status(err.status).send({msg: err.msg})
+  } else {
+    next()
+  }
+})
+
 app.all("/*", (req, res) => {
-    res.status(404).send({ msg: "Ooops: Noting to see here." });
+    res.status(404).send({ msg: "Ooops, nothing to see here!" });
   });
 
-app.use = (err, req, res, next) => {
-  
-  if (err){
-    res.status(err.status).send(err.msg)
-  }
-  next()
-}
+// app.listen((8080), () => console.log('app listening on PORT 8080'))
 
 module.exports = app;
