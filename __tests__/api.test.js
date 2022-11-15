@@ -144,3 +144,16 @@ describe(' 6. GET /api/reviews/:review_id/comments', () => {
             .expect(404)
     });
 });
+
+describe('7. POST /api/reviews/:review_id/comments ', () => {
+    test('successfully posts comment', () => {
+        return request(app)
+            .post('/api/reviews/1/comments')
+            .send({
+                username: 'dav3rid',
+                body: 'it was nice'
+            })
+            .expect(201)
+        
+    });
+});
