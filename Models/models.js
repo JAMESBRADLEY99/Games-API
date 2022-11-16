@@ -56,7 +56,30 @@ exports.addComment = (review_id, input) => {
         RETURNING *;`, [body, review_id, username]
     ).then((res) => {
         return res.rows[0]
-    }).catch(() => {
+    }).catch((err) => {
+        if (err.detail.includes('is not present in table "reviews"')) {
+            return Promise.reject({status:404, msg:'review not found'})
+        }
+        return Promise.reject({status: 400, msg: 'Bad request'})
+    })
+}
+
+exports.updateReviewVotes = (review_id, increment) => {
+    return db.query(
+        `UPDATE reviews
+        SET votes = votes + $2
+        WHERE review_id = $1
+        RETURNING *;`, [review_id, increment]
+    )
+    .then((review) => {
+        if (review.rows[0] === undefined){
+            return Promise.reject({status: 404, msg:'review not found'})
+        }
+        return review.rows[0]})
+    .catch((err) => {
+        if (err.status === 404){
+            return Promise.reject(err)
+        }
         return Promise.reject({status: 400, msg: 'Bad request'})
     })
 }

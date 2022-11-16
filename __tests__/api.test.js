@@ -192,9 +192,9 @@ describe('7. POST /api/reviews/:review_id/comments ', () => {
             username: 'dav3rid',
             body: 'this is a review'
         })
-        .expect(400)
+        .expect(404)
         .then((res) => {
-            expect(res.body.msg).toBe('Bad request')
+            expect(res.body.msg).toBe('review not found')
         })
     });
 
@@ -207,6 +207,55 @@ describe('7. POST /api/reviews/:review_id/comments ', () => {
         .expect(400)
         .then((res) => {
             expect(res.body.msg).toBe('Bad request')
+        })
+    });
+});
+
+describe('8. PATCH /api/reviews/:review_id', () => {
+    test('Updates the votes by 1', () => {
+        return request(app)
+        .patch('/api/reviews/1')
+        .send({
+            inc_votes: 1
+        })
+        .expect(201)
+        .then((res) => {
+            expect(res.body.votes).toEqual(2);
+        })
+    });
+
+    test('Updates the votes by more than 1', () => {
+        return request(app)
+        .patch('/api/reviews/1')
+        .send({
+            inc_votes: 5
+        })
+        .expect(201)
+        .then((res) => {
+            expect(res.body.votes).toEqual(6);
+        })
+    });
+
+    test('404s on non existent ', () => {
+        return request(app)
+        .patch('/api/reviews/1000000')
+        .send({
+            inc_votes: 5
+        })
+        .expect(404)
+        .then((res) => {
+            expect(res.body.msg).toBe('review not found')
+        })
+    });
+
+    test('400s on missing body key', () => {
+        return request(app)
+        .patch('/api/reviews/1')
+        .send({
+        })
+        .expect(400)
+        .then((res) => {
+            expect(res.body.msg).toBe('Bad request');
         })
     });
 });
