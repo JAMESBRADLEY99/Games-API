@@ -156,3 +156,57 @@ describe(' 6. GET /api/reviews/:review_id/comments', () => {
             })
     });
 });
+
+describe('7. POST /api/reviews/:review_id/comments ', () => {
+    test('successfully posts comment', () => {
+        return request(app)
+            .post('/api/reviews/1/comments')
+            .send({
+                username: 'dav3rid',
+                body: 'it was nice'
+            })
+            .expect(201)
+            .then((res) => {
+                expect(Object.keys(res.body)).toEqual(['comment_id', 'body', 'review_id', 'author', 'votes', 'created_at'])
+            })
+        
+    });
+
+    test('errors with non existing user', () => {
+        return request(app)
+            .post('/api/reviews/1/comments')
+            .send({
+                username: 'cool_username',
+                body: 'this is a review'
+            })
+            .expect(400)
+            .then((res) => {
+                expect(res.body.msg).toBe('Bad request')
+            })
+    });
+
+    test('errors on non existing review', () => {
+        return request(app)
+        .post('/api/reviews/100000/comments')
+        .send({
+            username: 'dav3rid',
+            body: 'this is a review'
+        })
+        .expect(400)
+        .then((res) => {
+            expect(res.body.msg).toBe('Bad request')
+        })
+    });
+
+    test('errors on missing key in request body', () => {
+        return request(app)
+        .post('/api/reviews/1/comments')
+        .send({
+            username: 'dav3rid'
+        })
+        .expect(400)
+        .then((res) => {
+            expect(res.body.msg).toBe('Bad request')
+        })
+    });
+});

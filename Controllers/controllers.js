@@ -1,4 +1,4 @@
-const { selectCategories, selectReviews, selectReviewById, selectCommentsByReviewId } = require('../Models/models.js');
+const { selectCategories, selectReviews, selectReviewById, selectCommentsByReviewId, addComment } = require('../Models/models.js');
 
 exports.getCategories = (req, res) => {
     
@@ -27,6 +27,14 @@ exports.getCommentsByReviewId = (req, res, next) => {
     selectCommentsByReviewId(req.params.review_id)
     .then((comments) => {
         return res.send(comments)
+    })
+    .catch((err) => next(err))
+}
+
+exports.postComment = (req, res, next) => {
+    addComment(req.params.review_id ,req.body)
+    .then((response) => {
+        return res.status(201).send(response)
     })
     .catch((err) => next(err))
 }
