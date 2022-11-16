@@ -71,6 +71,17 @@ describe('GET /api/reviews', () => {
                 expect(res.body.msg).toBe('Ooops, nothing to see here!')
             })
     });
+
+    test('can filter by category', () => {
+        return request(app)
+        .get('/api/reviews/?category=dexterity')
+        .expect(200)
+        .then((reviews) => {
+            reviews.body.forEach(element => {
+                expect(element.category).toBe('dexterity')
+            })
+        })
+    });
 });
 
 describe(' GET /api/reviews/:review_id', () => {

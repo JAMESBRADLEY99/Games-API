@@ -11,6 +11,9 @@ exports.getCategories = (req, res) => {
 exports.getReviews = (req, res) => {
     selectReviews()
     .then((reviews) => {
+        if (req.query.category !== undefined){
+            reviews = reviews.filter((i) => i.category === req.query.category)
+        }
         return res.send(reviews)
     })
 }
