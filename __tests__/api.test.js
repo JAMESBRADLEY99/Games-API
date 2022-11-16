@@ -83,6 +83,7 @@ describe(' GET /api/reviews/:review_id', () => {
                     review_id: 1,
                     title: 'Agricola',
                     category: 'euro game',
+                    comment_count: 0,
                     designer: 'Uwe Rosenberg',
                     owner: 'mallionaire',
                     review_body: 'Farmyard fun!',

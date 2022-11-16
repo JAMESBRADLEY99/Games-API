@@ -23,11 +23,16 @@ exports.selectReviews = () => {
 
 exports.selectReviewById = (review_id) => {
     return db.query(
-        `SELECT * FROM reviews WHERE review_id = $1`, [review_id]
+        `SELECT * FROM (SELECT reviews.*, COUNT(comments.created_at) as comment_count
+        FROM reviews
+        LEFT JOIN comments ON reviews.review_id = comments.review_id
+        GROUP BY (reviews.review_id)) as foo
+        WHERE review_id = $1;`, [review_id]
     ).then((review) => {
         if (review.rows[0] === undefined){
             return Promise.reject({status: 404, msg: 'Ooops, nothing to see here!'})
         }
+        review.rows[0].comment_count = Number(review.rows[0].comment_count)
         return review.rows[0]
     })
 }
