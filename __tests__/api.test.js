@@ -258,6 +258,18 @@ describe('8. PATCH /api/reviews/:review_id', () => {
             expect(res.body.msg).toBe('Bad request');
         })
     });
+
+    test('400s on missing body key', () => {
+        return request(app)
+        .patch('/api/reviews/1')
+        .send({
+            inc_votes: 'hola'
+        })
+        .expect(400)
+        .then((res) => {
+            expect(res.body.msg).toBe('Bad request');
+        })
+    });
 });
 
 describe('GET /api/users', () => {
