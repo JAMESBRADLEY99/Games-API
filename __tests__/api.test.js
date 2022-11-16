@@ -184,4 +184,29 @@ describe('7. POST /api/reviews/:review_id/comments ', () => {
                 expect(res.body.msg).toBe('Bad request')
             })
     });
+
+    test('errors on non existing review', () => {
+        return request(app)
+        .post('/api/reviews/100000/comments')
+        .send({
+            username: 'dav3rid',
+            body: 'this is a review'
+        })
+        .expect(400)
+        .then((res) => {
+            expect(res.body.msg).toBe('Bad request')
+        })
+    });
+
+    test('errors on missing key in request body', () => {
+        return request(app)
+        .post('/api/reviews/1/comments')
+        .send({
+            username: 'dav3rid'
+        })
+        .expect(400)
+        .then((res) => {
+            expect(res.body.msg).toBe('Bad request')
+        })
+    });
 });
