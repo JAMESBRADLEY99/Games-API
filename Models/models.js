@@ -83,3 +83,10 @@ exports.updateReviewVotes = (review_id, increment) => {
         return Promise.reject({status: 400, msg: 'Bad request'})
     })
 }
+
+exports.selectUsers = () => {
+    return db.query('SELECT * FROM users')
+    .then((users) => {
+        return users.rows
+    })
+}
