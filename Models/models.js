@@ -38,7 +38,7 @@ exports.selectReviews = (order = 'DESC', sort_by = 'created_at', category) => {
 
 exports.selectReviewById = (review_id) => {
     return db.query(
-        `SELECT * FROM (SELECT reviews.*, COUNT(comments.created_at) as comment_count
+        `SELECT * FROM (SELECT reviews.*, CAST(COUNT(comments.created_at) as int) as comment_count
         FROM reviews
         LEFT JOIN comments ON reviews.review_id = comments.review_id
         GROUP BY (reviews.review_id)) as foo
@@ -47,7 +47,7 @@ exports.selectReviewById = (review_id) => {
         if (review.rows[0] === undefined){
             return Promise.reject({status: 404, msg: 'Ooops, nothing to see here!'})
         }
-        review.rows[0].comment_count = Number(review.rows[0].comment_count)
+        // review.rows[0].comment_count = Number(review.rows[0].comment_count)
         return review.rows[0]
     })
 }
