@@ -403,3 +403,11 @@ describe('Delete comment by id', () => {
         .expect(404)
     });
 });
+
+describe('Get /api', () => {
+    test('returns endpoints', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+    });
+});
