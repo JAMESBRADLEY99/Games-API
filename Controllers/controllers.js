@@ -1,4 +1,4 @@
-const { selectCategories, selectReviews, selectReviewById, selectCommentsByReviewId, addComment, updateReviewVotes, selectUsers } = require('../Models/models.js');
+const { selectCategories, selectReviews, selectReviewById, selectCommentsByReviewId, addComment, updateReviewVotes, selectUsers, dropComment } = require('../Models/models.js');
 
 exports.getCategories = (req, res) => {
     
@@ -9,7 +9,7 @@ exports.getCategories = (req, res) => {
 }
 
 exports.getReviews = (req, res) => {
-    selectReviews()
+    selectReviews(req.query.order, req.query.sort_by, req.query.category)
     .then((reviews) => {
         return res.send(reviews)
     })
@@ -51,4 +51,10 @@ exports.getUsers = (req, res) => {
     selectUsers()
     .then((users) => {
         res.send(users)})
+}
+
+exports.deleteComment = (req, res, next) => {
+    dropComment(req.params.comment_id)
+    .then(() => res.status(204).send())
+    .catch((err) => next(err))
 }

@@ -71,6 +71,91 @@ describe('GET /api/reviews', () => {
                 expect(res.body.msg).toBe('Ooops, nothing to see here!')
             })
     });
+
+    test('can filter by category', () => {
+        return request(app)
+        .get(`/api/reviews/?category=dexterity`)
+        .expect(200)
+        .then((reviews) => {
+            reviews.body.forEach(element => {
+                expect(element.category).toBe('dexterity')
+            })
+        })
+    });
+   
+    test('can filter by category with space', () => {
+        return request(app)
+        .get(`/api/reviews/?category='social deduction'`)
+        .expect(200)
+        .then((reviews) => {
+            reviews.body.forEach(element => {
+                expect(element.category).toBe('social deduction')
+            })
+        })
+    });
+    
+    test('can sort asc', () => {
+        return request(app)
+        .get(`/api/reviews/?order=asc`)
+        .expect(200)
+        .then((res) => {
+            let check = true
+                res.body.forEach((element, i) => {
+                    if (res.body[i+1] !== undefined){
+                        if (res.body[i+1].created_at < element.created_at){
+                            check = false
+                        }
+                    }
+                })
+
+            expect(check).toBe(true)
+        })
+    });
+
+    test('can change the column to sort by', () => {
+        return request(app)
+        .get(`/api/reviews/?sort_by=comment_count`)
+        .expect(200)
+        .then((res) => {
+            let check = true
+                res.body.forEach((element, i) => {
+                    if (res.body[i+1] !== undefined){
+                        if (res.body[i+1].comment_count > element.comment_count){
+                            check = false
+                        }
+                    }
+                })
+
+            expect(check).toBe(true)
+        })
+    });
+
+    test('multi query', () => {
+        return request(app)
+        .get(`/api/reviews/?sort_by=comment_count&order=ASC&category='social deduction'`)
+        .expect(200)
+        .then((res) => {
+            let check = true
+                res.body.forEach((element, i) => {
+                    if (res.body[i+1] !== undefined){
+                        if (res.body[i+1].comment_count < element.comment_count){
+                            check = false
+                        }
+                    }
+                })
+
+            expect(check).toBe(true)
+
+            res.body.forEach(element => {
+                expect(element.category).toBe('social deduction')
+            })
+        })
+    });
+
+    
+
+    
+
 });
 
 describe(' GET /api/reviews/:review_id', () => {
@@ -83,6 +168,7 @@ describe(' GET /api/reviews/:review_id', () => {
                     review_id: 1,
                     title: 'Agricola',
                     category: 'euro game',
+                    comment_count: 0,
                     designer: 'Uwe Rosenberg',
                     owner: 'mallionaire',
                     review_body: 'Farmyard fun!',
@@ -301,5 +387,19 @@ describe('GET /api/users', () => {
                 }
               ])
         })
+    });
+});
+
+describe('Delete comment by id', () => {
+    test('returns 204', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+    });
+
+    test('404s', () => {
+        return request(app)
+        .delete('/api/comments/100000000')
+        .expect(404)
     });
 });

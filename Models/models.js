@@ -1,4 +1,5 @@
 const db = require('../db/connection.js')
+const {checkComment} = require('../Utils/utils.js')
 
 exports.selectCategories = () => {
     return db.query(
@@ -9,13 +10,28 @@ exports.selectCategories = () => {
     })
 }
 
-exports.selectReviews = () => {
-    return db.query(
+exports.selectReviews = (order = 'DESC', sort_by = 'created_at', category) => {
+    if (!['ASC', 'DESC'].includes(order.toUpperCase())){
+        order = 'DESC'
+    }
+    if (!['owner', 'review_id', 'category', 'review_img_url', 'created_at', 'desginer', 'comment_count']){
+        sort_by = 'created_at'
+    }
+
+    let queryStr = 
         `SELECT reviews.owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, COUNT(comments.created_at) as comment_count
         FROM reviews
-        LEFT JOIN comments ON reviews.review_id = comments.review_id
-        GROUP BY (reviews.owner,title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer)
-        ORDER BY reviews.created_at DESC;`
+        LEFT JOIN comments ON reviews.review_id = comments.review_id `
+    let parameters = []
+    if (category) {
+        parameters.push(category)
+        queryStr += `WHERE reviews.category = $1 `
+    }
+    queryStr += 
+        `GROUP BY (reviews.owner,title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer)
+        ORDER BY ${sort_by} ${order};`
+    return db.query(
+        queryStr, parameters
     ).then((reviews) => {
         return reviews.rows
     })
@@ -23,11 +39,16 @@ exports.selectReviews = () => {
 
 exports.selectReviewById = (review_id) => {
     return db.query(
-        `SELECT * FROM reviews WHERE review_id = $1`, [review_id]
+        `SELECT * FROM (SELECT reviews.*, CAST(COUNT(comments.created_at) as int) as comment_count
+        FROM reviews
+        LEFT JOIN comments ON reviews.review_id = comments.review_id
+        GROUP BY (reviews.review_id)) as foo
+        WHERE review_id = $1;`, [review_id]
     ).then((review) => {
         if (review.rows[0] === undefined){
             return Promise.reject({status: 404, msg: 'Ooops, nothing to see here!'})
         }
+        // review.rows[0].comment_count = Number(review.rows[0].comment_count)
         return review.rows[0]
     })
 }
@@ -89,4 +110,9 @@ exports.selectUsers = () => {
     .then((users) => {
         return users.rows
     })
+}
+
+exports.dropComment = (comment_id) => {
+    return checkComment(comment_id)
+    .then(() => db.query('DELETE FROM comments WHERE comment_id = $1', [comment_id]))
 }
