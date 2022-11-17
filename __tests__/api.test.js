@@ -389,3 +389,11 @@ describe('GET /api/users', () => {
         })
     });
 });
+
+describe('Delete comment by id', () => {
+    test('returns 204', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+    });
+});
