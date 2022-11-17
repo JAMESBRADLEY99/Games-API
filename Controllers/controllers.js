@@ -53,7 +53,8 @@ exports.getUsers = (req, res) => {
         res.send(users)})
 }
 
-exports.deleteComment = (req, res) => {
+exports.deleteComment = (req, res, next) => {
     dropComment(req.params.comment_id)
     .then(() => res.status(204).send())
+    .catch((err) => next(err))
 }

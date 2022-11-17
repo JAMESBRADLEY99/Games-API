@@ -396,4 +396,10 @@ describe('Delete comment by id', () => {
         .delete('/api/comments/1')
         .expect(204)
     });
+
+    test('404s', () => {
+        return request(app)
+        .delete('/api/comments/100000000')
+        .expect(404)
+    });
 });

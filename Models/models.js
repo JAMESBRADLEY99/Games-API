@@ -1,4 +1,5 @@
 const db = require('../db/connection.js')
+const {checkComment} = require('../Utils/utils.js')
 
 exports.selectCategories = () => {
     return db.query(
@@ -112,6 +113,6 @@ exports.selectUsers = () => {
 }
 
 exports.dropComment = (comment_id) => {
-    return db.query('DELETE FROM comments WHERE comment_id = $1', [comment_id])
-    
+    return checkComment(comment_id)
+    .then(() => db.query('DELETE FROM comments WHERE comment_id = $1', [comment_id]))
 }
