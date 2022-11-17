@@ -74,7 +74,7 @@ describe('GET /api/reviews', () => {
 
     test('can filter by category', () => {
         return request(app)
-        .get('/api/reviews/?category=dexterity')
+        .get(`/api/reviews/?category=dexterity`)
         .expect(200)
         .then((reviews) => {
             reviews.body.forEach(element => {
@@ -82,6 +82,80 @@ describe('GET /api/reviews', () => {
             })
         })
     });
+   
+    test('can filter by category with space', () => {
+        return request(app)
+        .get(`/api/reviews/?category='social deduction'`)
+        .expect(200)
+        .then((reviews) => {
+            reviews.body.forEach(element => {
+                expect(element.category).toBe('social deduction')
+            })
+        })
+    });
+    
+    test('can sort asc', () => {
+        return request(app)
+        .get(`/api/reviews/?order=asc`)
+        .expect(200)
+        .then((res) => {
+            let check = true
+                res.body.forEach((element, i) => {
+                    if (res.body[i+1] !== undefined){
+                        if (res.body[i+1].created_at < element.created_at){
+                            check = false
+                        }
+                    }
+                })
+
+            expect(check).toBe(true)
+        })
+    });
+
+    test('can change the column to sort by', () => {
+        return request(app)
+        .get(`/api/reviews/?sort_by=comment_count`)
+        .expect(200)
+        .then((res) => {
+            let check = true
+                res.body.forEach((element, i) => {
+                    if (res.body[i+1] !== undefined){
+                        if (res.body[i+1].comment_count > element.comment_count){
+                            check = false
+                        }
+                    }
+                })
+
+            expect(check).toBe(true)
+        })
+    });
+
+    test('multi query', () => {
+        return request(app)
+        .get(`/api/reviews/?sort_by=comment_count&order=ASC&category='social deduction'`)
+        .expect(200)
+        .then((res) => {
+            let check = true
+                res.body.forEach((element, i) => {
+                    if (res.body[i+1] !== undefined){
+                        if (res.body[i+1].comment_count < element.comment_count){
+                            check = false
+                        }
+                    }
+                })
+
+            expect(check).toBe(true)
+
+            res.body.forEach(element => {
+                expect(element.category).toBe('social deduction')
+            })
+        })
+    });
+
+    
+
+    
+
 });
 
 describe(' GET /api/reviews/:review_id', () => {

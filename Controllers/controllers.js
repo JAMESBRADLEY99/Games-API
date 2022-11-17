@@ -9,11 +9,11 @@ exports.getCategories = (req, res) => {
 }
 
 exports.getReviews = (req, res) => {
-    selectReviews()
+    selectReviews(req.query.order, req.query.sort_by, req.query.category)
     .then((reviews) => {
-        if (req.query.category !== undefined){
-            reviews = reviews.filter((i) => i.category === req.query.category)
-        }
+        // if (req.query.category !== undefined){
+        //     reviews = reviews.filter((i) => i.category === req.query.category)
+        // }
         return res.send(reviews)
     })
 }

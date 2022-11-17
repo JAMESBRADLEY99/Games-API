@@ -9,13 +9,28 @@ exports.selectCategories = () => {
     })
 }
 
-exports.selectReviews = () => {
-    return db.query(
+exports.selectReviews = (order = 'DESC', sort_by = 'created_at', category) => {
+    if (!['ASC', 'DESC'].includes(order.toUpperCase())){
+        order = 'DESC'
+    }
+    if (!['owner', 'review_id', 'category', 'review_img_url', 'created_at', 'desginer', 'comment_count']){
+        sort_by = 'created_at'
+    }
+
+    let queryStr = 
         `SELECT reviews.owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, COUNT(comments.created_at) as comment_count
         FROM reviews
-        LEFT JOIN comments ON reviews.review_id = comments.review_id
-        GROUP BY (reviews.owner,title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer)
-        ORDER BY reviews.created_at DESC;`
+        LEFT JOIN comments ON reviews.review_id = comments.review_id `
+    let parameters = []
+    if (category) {
+        parameters.push(category)
+        queryStr += `WHERE reviews.category = $1 `
+    }
+    queryStr += 
+        `GROUP BY (reviews.owner,title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer)
+        ORDER BY ${sort_by} ${order};`
+    return db.query(
+        queryStr, parameters
     ).then((reviews) => {
         return reviews.rows
     })
