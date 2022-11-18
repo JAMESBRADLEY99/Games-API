@@ -1,4 +1,8 @@
 const { selectCategories, selectReviews, selectReviewById, selectCommentsByReviewId, addComment, updateReviewVotes, selectUsers, dropComment } = require('../Models/models.js');
+const endpoints = require('../endpoints.json')
+exports.getApi = (req, res) => {
+    return res.send({body: endpoints})
+}
 
 exports.getCategories = (req, res) => {
     
