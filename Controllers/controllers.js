@@ -28,7 +28,7 @@ exports.getReviewsById = (req, res, next) => {
 }
 
 exports.getCommentsByReviewId = (req, res, next) => {
-    selectCommentsByReviewId(req.params.review_id)
+    selectCommentsByReviewId(Number(req.params.review_id))
     .then((comments) => {
         return res.send(comments)
     })
